@@ -18,7 +18,7 @@ CC = gcc -g3
 READLINE_DIR = ${HOME}/.brew/opt/readline
 
 
-FLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address
+FLAGS = -Wall -Wextra -Werror -g3 #-fsanitize=address
 F_READLINE = -I$(READLINE_DIR)/include
 COMPILE = -lreadline -L$(READLINE_DIR)/lib
 

@@ -10,7 +10,7 @@
 #                                                                              #
 # **************************************************************************** #
 
-SRCS			=	ft_atoi.c ft_split.c ft_strlcpy.c ft_strtok.c ft_strtrim.c ft_strncmp.c ft_strlen.c ft_strdup.c ft_memcpy.c ft_itoa.c ft_strjoin.c\
+SRCS			=	ft_atoi.c ft_calloc.c ft_split.c ft_strlcpy.c ft_strtok.c ft_strtrim.c ft_strncmp.c ft_strlen.c ft_strdup.c ft_memcpy.c ft_itoa.c ft_strjoin.c\
 				
 OBJS			= $(SRCS:.c=.o)
 

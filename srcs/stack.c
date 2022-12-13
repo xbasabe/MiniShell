@@ -12,202 +12,93 @@
 
 #include "minishell.h"
 
-t_stack *pipe_stack(char * input)
+t_stack	*pipe_stack(char *input)
 {
-    t_stack *stack;
-    t_stack *tmp_node;
-    char    **tokens;
-    int     i;
-   
-    input = pre_parse(input); //evitar redirecciones, tratarlas como pipes
-    tokens = ft_split(input, '|');
-    if (tokens[0])
-    {
-        stack = create_node(tokens[0]);
-        create_cmds(&stack);
-    }
-    i = 1;
-    while (tokens[i])
-    {
-        tmp_node = create_node(tokens[i]);
-        create_cmds(&tmp_node);
-        insert_l_pipe(tmp_node, stack);
-        i++;
-    }
-    clear(tokens);
-    return (stack);
+	t_stack	*stack;
+	t_stack	*tmp_node;
+	char	**tokens;
+	int		i;
+
+	input = pre_parse(input);
+	//tokens = ft_split(input, ' ');
+	tokens = split_tokens(input);
+	if (tokens[0])
+	{
+		stack = create_node(tokens[0]);
+		create_cmds(&stack, tokens[0]);
+		//stack->pipe.parsed_input = parse(stack->pipe.input);
+	}
+	if(tokens[1] != NULL)
+	{
+		i = 1;
+		while (tokens[i])
+		{
+			tmp_node = create_node(tokens[i]);
+			create_cmds(&tmp_node, tokens[i]);
+			//tmp_node->pipe.parsed_input = parse(tmp_node->pipe.input);
+			insert_l_pipe(tmp_node, stack);
+			i++;
+		}
+	}
+	return (stack);
 }
 
-t_stack  *create_node(char *txt) 
+t_stack	*create_node(char *txt)
 {
-    t_stack  *node;
-   
-    node = (t_stack *)malloc(sizeof(t_stack));
-    node->pipe.input = ft_strdup(txt);
-    node->pipe.cmd = NULL;
-    node->pipe.arg = NULL;
-    node->pipe.ext_path = NULL;
-    node->next = NULL;
-    node->prev = NULL;
-    pipe(node->pipe.p);
-    return(node);
+	t_stack	*node;
+
+	node = (t_stack *)malloc(sizeof(t_stack));
+	node->pipe.input = ft_strdup(txt);
+	node->pipe.parsed_input = parse(txt);
+	//node->pipe.parsed_input = NULL;
+	node->pipe.cmd = NULL;
+	node->pipe.arg = NULL;
+	node->pipe.ext_path = NULL;
+	node->next = NULL;
+	node->prev = NULL;
+	pipe(node->pipe.p);
+	return (node);
 }
 
-void    insert_l_pipe(t_stack *node, t_stack *stack)
+void	insert_l_pipe(t_stack *node, t_stack *stack)
 {
-    t_stack  *temp;
-    
-    if (stack->next == NULL)
-    {
-        stack->next = node;
-        node->prev = stack;
-    }
-    else
-    {
-        temp = stack->next;
-        while(temp->next)
-            temp = temp->next;
-        node->prev = temp;
-        temp->next = node;
-    }
+	t_stack	*temp;
+
+	if (stack->next == NULL)
+	{
+		stack->next = node;
+		node->prev = stack;
+	}
+	else
+	{
+		temp = stack->next;
+		while (temp->next)
+			temp = temp->next;
+		node->prev = temp;
+		temp->next = node;
+	}
 }
 
-void    free_node_content(t_stack *node)
+void	free_node_content(t_stack *node)
 {
-    if (node == NULL)
-        return ;
-    if (node->pipe.arg != NULL)
-        clear(node->pipe.arg);
-    free(node->pipe.input);
-    free(node->pipe.cmd);
+	if (node == NULL)
+		return ;
+	if (node->pipe.arg != NULL)
+		clear(node->pipe.arg);
+	free(node->pipe.input);
+	free(node->pipe.cmd);
+	//free(node->pipe.parsed_input);
 }
 
-void deleteAllNodes(t_stack *start)
+void	delete_all_nodes(t_stack *start)
 {
-    t_stack * temp;
+	t_stack	*temp;
 
-    while (start != NULL)
-    { 
-        temp = start;
-        free_node_content(temp);
-        start = start -> next;
-        free(temp);
-    }
+	while (start != NULL)
+	{
+		temp = start;
+		free_node_content(temp);
+		start = start -> next;
+		free(temp);
+	}
 }
-
-
-
-
-
-/* OLD VERSION*/
-/*
-t_stack *pipe_stack(char * input)
-{
-    t_stack	*stack;
-    t_stack	*tmp_node;
-    char	**tokens;
-    int		i;
-
-    tokens = ft_split(input, '|');
-    if (tokens[0])
-    {
-        stack = create_node(tokens[0]);
-        create_cmds(&stack);
-    }
-    i = 1;
-    while (tokens[i])
-    {
-        tmp_node = create_node(tokens[i]);
-        create_cmds(&tmp_node);
-        insert_l_pipe(tmp_node, stack);
-        i++;
-    }
-    clear(tokens); //se libera con node (stack)
-    return (stack);
-}
-
-t_stack  *create_node(char *txt) 
-{
-    t_stack  *node;
-   
-    node = (t_stack *)malloc(sizeof(t_stack));
-    node->pipe.input = txt;
-    node->pipe.cmd = NULL;
-    node->pipe.arg = NULL;
-    node->pipe.ext_path = NULL;
-    node->next = NULL;
-    node->prev = NULL;
-    pipe(node->pipe.p);
-    return(node);
-}
-
-void    insert_l_pipe(t_stack *node, t_stack *stack) //last
-{
-    t_stack  *temp;
-    
-    if (stack->next == NULL)
-    {
-        stack->next = node;
-        node->prev = stack;
-    }
-    else
-    {
-        temp = stack->next;
-        while(temp->next)
-            temp = temp->next;
-        node->prev = temp;
-        temp->next = node;
-    }
-}
-
-void    free_node(t_stack *node)
-{
-    if (node == NULL)
-        return ;
-    
-    //free(node->pipe.arg);
-    if (node->pipe.arg)
-        clear(node->pipe.arg);
-    //free(node->pipe.cmd);
-
-    free_node(node->next);
-    free_node(node->prev);
-    free(node->pipe.input);
-    free(node);
-}
-
-
-void    free_node_content(t_stack *node)
-{
-    if (node == NULL)
-        return ;
-    if (node->pipe.arg != NULL)
-        clear(node->pipe.arg);
-    free(node->pipe.cmd);
-    //free(node->pipe.input);
-}
-
-
-void	free_pipe(t_pipe pipe)
-{
-	//free(pipe.input);
-	if (pipe.cmd)
-		free(pipe.cmd);
-	if (pipe.arg)
-		clear(pipe.arg);
-}
-
-void deleteAllNodes(t_stack *start)
-{
-    t_stack * temp;
-
-    while (start != NULL)
-    { 
-        temp = start;
-        //free_node_content(temp);
-		free_pipe(temp->pipe);
-        start = start -> next;
-        free(temp);
-    }
-}
-*/

@@ -25,11 +25,13 @@ char	**sort_env(void)
 	{
 		j = -1;
 		while (sort[++j])
-		if (ft_strncmp(sort[i], sort[j], ft_strlen(sort[i])) < 0)
 		{
-			tmp = sort[i];
-			sort[i] = sort[j];
-			sort[j] = tmp;
+			if (ft_strncmp(sort[i], sort[j], ft_strlen(sort[i])) < 0)
+			{
+				tmp = sort[i];
+				sort[i] = sort[j];
+				sort[j] = tmp;
+			}
 		}
 	}
 	return (sort);
@@ -64,7 +66,7 @@ void	export_add(char *vbl)
 	vble = ft_split(vbl, '=');
 	new = ft_lstnew(vble[0], vble[1]);
 	clear(vble);
-    ft_lstadd_back(&(g_shell.env), new);
+	ft_lstadd_back(&(g_shell.env), new);
 }
 
 void	export(t_stack *node)
@@ -87,7 +89,7 @@ void	export(t_stack *node)
 		if (str_cmp(env->name, var[0]) == 0) 
 		{
 			free(env->val);
-			env->val = ft_strdup((const char*)var[1]);
+			env->val = ft_strdup((const char *)var[1]);
 			exist = 1;
 			break ;
 		}

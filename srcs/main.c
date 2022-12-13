@@ -35,24 +35,23 @@ int	main(int argc, char **argv, char **env)
 	(void)argv;
 	stack = NULL;
 	tokens = NULL;
-	sig_handler(1);
+	//sig_handler(1);
+	new_sig_handler();
 	g_shell.env = NULL;
 	set_envi(&(g_shell.env), env);
-
 	while (1)
 	{
 		input = readline("MiniShell $> ");
 		add_history(input);
-		if (!input)
-			sig_handler(3);
+		//if (!input)
+		//	sig_handler(3);
 		if (ft_strlen(input) > 0)
 		{
 			tokens = ft_split(input, ' ');
+			//tokens = split_tokens(input);
 			if (str_cmp(tokens[0], "exit") == 0)
 			{
-				//free_all_params(&stack, &input, &tokens);
-				//break ;
-				exit(0);
+				exit(g_shell.num_quit);
 			}
 			stack = pipe_stack(input);
 			exec_stack(stack, input);
@@ -60,13 +59,13 @@ int	main(int argc, char **argv, char **env)
 		free_all_params(&stack, &input, &tokens);
 	}
 	ft_lstclear(&g_shell.env);
-	return (0);
+	return (g_shell.num_quit);
 }
 
 void	free_all_params(t_stack **stack, char **input, char ***tokens)
 {
 	if (*stack)
-		deleteAllNodes(*stack);
+		delete_all_nodes(*stack);
 	if (*input)
 		free(*input);
 	if (*tokens)

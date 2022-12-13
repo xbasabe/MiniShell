@@ -58,4 +58,6 @@ void	ft_rev_str(char	*str, int	lenght);
 int	n_len(int n, int i);
 char	*ft_itoa(int n);
 
+void	*ft_calloc(size_t count, size_t size);
+
 #endif

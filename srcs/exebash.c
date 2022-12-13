@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/05 13:33:24 by xbasabe-          #+#    #+#             */
-/*   Updated: 2022/12/09 11:13:54 by marvin           ###   ########.fr       */
+/*   Updated: 2022/12/13 17:32:17 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void exec_in_child(char *input, t_stack *stack)
 		exit(0); //close the process, it will be excecuted in the parent
 	if(is_built(node->pipe.cmd) == 1)
 	{
-		sig_handler(2);
+		//sig_handler(2);
 		if (launch(input, node) == -1) //get path and launch execve. -1 = error
 		{
 			fd_putstr_out("-Minishell: ", node); //printf para que salga siempre en pantalla?
@@ -53,10 +53,12 @@ pid_t	child_launch(char *input, t_stack *stack)
 	}
 	if (ch_pid == 0) //HIJO
 	{
+		g_shell.pid = getpid();
 		exec_in_child(input, stack);
 	}
 	if(ch_pid > 0) //PADRE
 	{
+		g_shell.pid = getpid();
 		close(node->pipe.p[1]);
 		if (is_built(node->pipe.cmd) == 0)
 		{
@@ -65,25 +67,27 @@ pid_t	child_launch(char *input, t_stack *stack)
 		close(node->pipe.p[0]);
  	}
 	//wait(NULL);
-	wait(&(g_shell.num_quit)); //variable para el exit status
+	wait(&(g_shell.num_quit));
+	if(g_shell.num_quit == 32512)
+		g_shell.num_quit = 127;
 	return (ch_pid);
 }
 
-void    exec_stack(t_stack *stack, char *input)
+void	exec_stack(t_stack *stack, char *input)
 {
-    t_stack  *tmp;
-    int             i;
+	t_stack	*tmp;
+	int		i;
 
-    tmp = stack;
+	tmp = stack;
 	i = 0;
-	if(exit_cmd_in_stack(stack) > 0)
+	if (exit_cmd_in_stack(stack) > 0)
 		tmp = reorder_stack(stack);
-    while(tmp != NULL)
-    {
- 		child_launch(input, tmp);
-        tmp = tmp->next;
-        i++;
-    }
+	while (tmp != NULL)
+	{
+		child_launch(input, tmp);
+		tmp = tmp->next;
+		i++;
+	}
 }
 
 int is_built(char *cmd)
@@ -105,6 +109,8 @@ int is_built(char *cmd)
 	else if (str_cmp(cmd, "env") == 0)
 		r = 0;
 	else if (str_cmp(cmd, "exit") == 0)
+		r = 0;
+	else if (str_cmp(cmd, "$?") == 0)
 		r = 0;
 	return (r);
 }

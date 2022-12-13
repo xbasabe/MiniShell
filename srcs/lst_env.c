@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/01 01:14:15 by nlibano-          #+#    #+#             */
-/*   Updated: 2022/12/07 22:11:14 by nlibano-         ###   ########.fr       */
+/*   Updated: 2022/12/13 12:17:52 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ t_env	*ft_lstnew(char *name, char *val)
 	return (list);
 }
 
-
 void	ft_lstadd_back(t_env **lst, t_env *new)
 {
 	t_env	*last_lst;
@@ -41,7 +40,6 @@ void	ft_lstadd_back(t_env **lst, t_env *new)
 
 t_env	*ft_lstfind(t_env *lst, char *name)
 {
-
 	while (lst)
 	{
 		if (lst->name == name)

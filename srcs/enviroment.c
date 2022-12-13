@@ -12,19 +12,18 @@
 
 #include "minishell.h"
 
-
 void	set_envi(t_env **envi, char **env)
 {
 	t_env	*new;
 	char	**values;
-    int		i;
+	int		i;
 
 	i = -1;
-    while(env[++i])
-    {
-        values = ft_split(env[i], '=');
+	while (env[++i])
+	{
+		values = ft_split(env[i], '=');
 		new = ft_lstnew(values[0], values[1]);
-        ft_lstadd_back(envi, new);
+		ft_lstadd_back(envi, new);
 		clear(values);
-    }
+	}
 }
